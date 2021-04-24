@@ -38,16 +38,16 @@ class Grid():
     self.render[x*self.unit_size+1:(x+1)*self.unit_size,
                 y*self.unit_size+1:(y+1)*self.unit_size]=color
 
-  def render_board(self,snakes):
-    return self.update_board(snakes)
-
-
   # def render_board(self,snakes):
-  #   self.render=np.zeros((self.height+self.unit_gap,self.width+self.unit_gap,3))
-  #   self.render[:,:,:]=self.SPACE_COLOR
-  #   self.color_case(self.apple, self.APPLE_COLOR)
-  #   for snake in snakes:
-  #     for coord in snake.body:
-  #       self.color_case(coord, self.BODY_COLOR)
-  #     self.color_case(snake.head, self.HEAD_COLOR)
-  #   return self.render.copy()
+  #   return self.update_board(snakes)
+
+
+  def render_board(self,snakes):
+    self.render=np.zeros((self.height+self.unit_gap,self.width+self.unit_gap,3))
+    self.render[:,:,:]=self.SPACE_COLOR
+    self.color_case(self.apple, self.APPLE_COLOR)
+    for snake in snakes:
+      for coord in snake.body:
+        self.color_case(coord, self.BODY_COLOR)
+      self.color_case(snake.head, self.HEAD_COLOR)
+    return self.render.copy()

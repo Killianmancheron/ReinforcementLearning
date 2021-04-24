@@ -1,3 +1,4 @@
+import numpy as np
 from Environnment import Snake
 from Environnment import Grid
 

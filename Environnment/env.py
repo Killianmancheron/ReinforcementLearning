@@ -1,3 +1,9 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import gym
+from gym import spaces
+from Environnment import Controller
+
 
 
 class SnakeGame():
@@ -5,6 +11,7 @@ class SnakeGame():
   def __init__(self, grid_size=(15,15),):
     self.grid_size = grid_size
     # Define action and observation space
+    self.action_space = spaces.Discrete(4)
     self.viewer=None
 
   def step(self, action):
