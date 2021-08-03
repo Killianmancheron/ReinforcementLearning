@@ -1,5 +1,7 @@
-from Environnment.snake import Snake
-from Environnment.grid import Grid
+from .move import Move
+from .snake import Snake
+from .grid import Grid
 
-from Environnment.controller import Controller
-from Environnment.env import SnakeGame
+
+from .controller import Controller
+from .env import SnakeGame
