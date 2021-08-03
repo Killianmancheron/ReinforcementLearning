@@ -5,11 +5,13 @@ from .grid import Grid
 
 class Abstract_Controller():
 
-  def __init__(self, grid_size=(15,15)):
+  def __init__(self, grid_size=(15,15), nb_snakes=1):
     self.grid=Grid(grid_size)
     self.max_x=grid_size[0]-1
     self.max_y=grid_size[1]-1
-    
+    self.nb_snakes = nb_snakes
+    self.init_snakes()
+
     self.grid.spawn_apple()
     self.grid.update_board(self.snakes)
 
@@ -40,9 +42,8 @@ class Abstract_Controller():
 class Controller(Abstract_Controller):
 
   def __init__(self, grid_size=(15,15), nb_snakes=1):
-    Abstract_Controller.__init__(self, grid_size)
-    self.nb_snakes = nb_snakes
-    self.init_snakes()
+    Abstract_Controller.__init__(self, grid_size, nb_snakes)
+    
 
   def get_reward(self, snake, direction):
     next_coord=Move(snake.head, direction).next_coord()
