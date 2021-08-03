@@ -1,4 +1,5 @@
 import numpy as np
+import random
 from .move import Move
 from .snake import Snake
 from .grid import Grid
@@ -6,28 +7,56 @@ from .grid import Grid
 class Abstract_Controller():
 
   def __init__(self, grid_size=(15,15), nb_snakes=1):
+    """Classe abstraite du controleur pour l'encapsulation de la grille
+
+    Args:
+        grid_size (tuple, optional): Taille de la grille. Defaults to (15,15).
+        nb_snakes (int, optional): Nombre de serpents. Defaults to 1.
+    """    
+    self.grid_size = grid_size
     self.grid=Grid(grid_size)
+    # Coordonnées maximales de la grille
     self.max_x=grid_size[0]-1
     self.max_y=grid_size[1]-1
     self.nb_snakes = nb_snakes
+    # Positionne les serpents sur la grille
     self.init_snakes()
 
-    self.grid.spawn_apple()
+    # On fait appraître autant de pommes que de serpents
+    for _ in range(nb_snakes):
+      self.grid.spawn_apple()
+    # On actualise la grille avec tous les éléments
     self.grid.update_board(self.snakes)
 
   def init_snakes(self):
-    assert (self.nb_snakes<=0)|(self.nb_snakes>=10), "Nombre de serpents limités de 1 à 9"
+    """Permet de faire apparaître les serpents sur la grille et les enregistre dans une liste
+    """    
+    assert (self.nb_snakes>0)|(self.nb_snakes<10), "Nombre de serpents limités de 1 à 9"
     if self.nb_snakes==1:
       mid_grid=tuple([int(x/2) for x in self.grid_size])
       self.snakes=[Snake(init_coord=mid_grid)]
     else :
       spawn_points = self.get_spawn_points()
-      self.snakes=[Snake(init_coord=coord) for coord in spawn_points]
+      #self.snakes=[Snake(init_coord=coord) for coord in random.sample(spawn_points, self.nb_snakes)]
+      self.snakes=[Snake(init_coord=coord) for coord in [(6,6),(6,7)]]
 
   def is_output(self, coord):
+    """Permet de vérifier si des coordonnées sont hors de la grille ou non
+
+    Args:
+        coord (np.array): Coordonnées à vérifier
+
+    Returns:
+        Boolean: Vrai si les coordonnées sont valides
+    """    
     return (coord[0]<0 or coord[0]>self.max_x) or (coord[1]<0 or coord[1]>self.max_y)
 
   def get_spawn_points(self):
+    """Permet de récupérer l'ensembles des points où les têtes de serpents peuvent apparaître
+
+    Returns:
+        list(<np.array>): Liste des coordonnées servant de points d'apparition des têtes de serpents
+    """    
     grid = np.zeros(self.grid_size)
     # à généraliser
     grid[np.arange(3,15,4),:]+=1
@@ -38,61 +67,124 @@ class Abstract_Controller():
       spawn_points.append(np.array([x,y]))
     return spawn_points
 
+
   
 class Controller(Abstract_Controller):
 
   def __init__(self, grid_size=(15,15), nb_snakes=1):
+    """Classe permettant le controle de la grille avec le serpent, de vérifier si des déplacements sont possibles, etc.
+
+    Args:
+        grid_size (tuple, optional): Taille de la grille. Defaults to (15,15).
+        nb_snakes (int, optional): Nombre de serpents. Defaults to 1.
+    """    
     Abstract_Controller.__init__(self, grid_size, nb_snakes)
     
 
   def get_reward(self, snake, direction):
+    """Permet de récupérer une récompense pour un serpent et une action.
+    L'ensemble des règles est limité à un serpent, la collision n'est pas gérée.
+    Une récompense est positive si le serpent se déplace sur une pomme
+    Une récompense est négative si le serpent sort de la grille ou percute son corps
+    Sinon la récompense est négative
+
+    Args:
+        snake (<Snake>): Serpent dont on souhaite connaître la valeur de son action
+        direction (int): Direction à prendre pour le serpent (UP=0, LEFT=1, RIGHT=2, DOWN=3)
+
+    Returns:
+        int: récompense obtenue pour l'action éfectuée
+    """    
     next_coord=Move(snake.head, direction).next_coord()
-    reward=0
-    #gestion de l'action hors de la grille
+    # Gestion de l'action hors de la grille
     if self.is_output(next_coord):
       snake.alive=False
-      reward=-1
-    else:
-      # gestion pomme
-      if np.array_equal(next_coord,self.grid.apple):
-        self.grid.spawn_apple()
-        reward=1
-      else:
-        #suppression de la queue
-        snake.body.popleft()
-        #gestion colision avec queue
-        if any((next_coord == x).all() for x in snake.body):
-          snake.alive=False
-          reward=-1
-    return reward
+      return -1
+    # Gestion des pommes
+    for apple in self.grid.apples :
+      if np.array_equal(next_coord,apple):
+        # On retire la pomme de la liste
+        self.grid.drop_apple(apple)
+        return 1
+    # Suppression de la queue
+    snake.body.popleft()
+    # Gestion colision avec queue
+    if any((next_coord == x).all() for x in snake.body):
+      snake.alive=False
+      return -1
+    return 0
 
   def execute(self, directions):
+    """Execute l'ensemble des directions sur les serpents, gère les collisions, les actions, 
+    les récompenses et les pommes. si un serpent meurt, son cadavre disparaît.
+
+    Args:
+        directions (list<int>): Ensembles des directions à prendre pour chaque serpent
+
+    Returns:
+        tuple: état du jeu, récompenses à chaque agent, liste des agents en vie
+    """    
     rewards = []
     for snake, direction in zip(self.select_alive_snakes(),directions) : 
+      # Récupération des récompenses individuelles
       reward = self.get_reward(snake, direction)
       rewards.append(reward)
+      # Execution des actions pour chaque serpent
       if snake.alive :
         snake.action(direction)
-    self.control_collision()
+    # Gestion de la collision sur tous les serpents
+    self.control_collision(rewards)
+    # On souhaite autant de pommes que de serpents vivants
+    while len(self.grid.apples)<len(self.select_alive_snakes()):
+      self.grid.spawn_apple()
+    self.grid.update_board(self.snakes)
     rewards = self.harmonic(rewards)
-    return self.get_board(), reward, self.is_alive()
+    return self.get_board(), rewards, self.is_alive()
 
-  def control_collision(self, rewards, directions):
-    for i, snake, direction in zip(range(self.nb_snakes), self.select_alive_snakes(), directions):
-      next_coord=Move(snake.head, direction).next_coord()
-      for other_snake in self.select_alive_snakes():
-        if any((next_coord == x).all() for x in other_snake.body):
-          rewards[i]=-1
+  def control_collision(self, rewards):
+    """Gère les collisions entre serpents. S'appui sur les serpents en vie uniquement.
+    (Donc si un serpetn se suicide ou sort de la grille, aucun serpent ne peut entrer en collision avec)
+
+    Args:
+        rewards (list<int>): Liste des récompenses à modifier (-1 si un serpent en percute un autre)
+
+    Returns:
+        list<int>: La liste des récompenses modifiées.
+    """    
+    for i, snake in enumerate(self.select_alive_snakes()):
+      # Selection des autres serpents
+      other_snakes = [s for j,s in enumerate(self.select_alive_snakes()) if j!=i]
+      for other_snake in other_snakes:
+        # Vérification si la tête du serpent se trouve dans le corps des autres serpents
+        if any((snake.head == x).all() for x in other_snake.body):
+          rewards[i]-=1
           snake.alive=False
     return rewards
 
   def select_alive_snakes(self):
+    """Sélectionne uniquement les serpents en vie
+
+    Returns:
+        list<Snake>: Liste des serpents vivants
+    """    
     return [snake for snake in self.snakes if snake.alive]
 
   def is_alive(self):
+    """Renvoie une liste des serpents de booléen avec True si un serpent est en vie
+
+    Returns:
+        List<boolean>: Liste informant si un serpent est vivant ou non
+    """    
     return [snake.alive for snake in self.snakes]
 
   def is_done(self):
+    """Permet de savoir si la partie est finie ou non. 
+    S'il n'y qu'un serpent, elle se termine s'il meurt.
+    S'il y en a plusieurs, elle se termine lorsqu'il n'en reste plus qu'un.
+
+    Returns:
+        boolean: Partie finie ou non
+    """    
     nb_snakes=len(self.snakes)
     nb_alives=sum([snake.alive for snake in self.snakes])
     if (nb_snakes==1) and (nb_alives==0):
@@ -102,17 +194,40 @@ class Controller(Abstract_Controller):
     return False
 
   def harmonic(self, rewards):
+    """Lorsque plusieurs serpents sont présents, les récompenses doivent être de somme nulle.
+    Pour cela, on harmonise les récompenses. Ici deux harmonisations sont faites :
+    - harmonisation des récompenses positives (bonus pour ceux ayant une récompense de 1, malus aux autres)
+    - harmonisation des récompenses négatives (malus pour ceux ayant une récompense de -1, bonus aux autres)
+
+    Args:
+        rewards (list<int>): Liste des récompenses
+
+    Returns:
+        list<flaot>: Liste harmonique des récompenses.
+    """    
     nb_snakes = len(rewards)
     new_rewards = np.zeros(nb_snakes)
+    # Gestion des serpents avec une récompense de +1
     Bonus = sum([(reward==1) for reward in rewards])
     new_rewards+=np.where(np.array(rewards)==1,(nb_snakes-Bonus)/nb_snakes, -Bonus/nb_snakes)
+    # Gestion des serpents avec une récompense de -1
     Malus = sum([(reward==-1) for reward in rewards])
-    new_rewards+=np.where(np.array(rewards)==-1,(nb_snakes-Malus)/nb_snakes, -Malus/nb_snakes)
+    new_rewards+=np.where(np.array(rewards)==-1,-(nb_snakes-Malus)/nb_snakes, Malus/nb_snakes)
     return new_rewards
   
   # Getters
   def get_board(self):
-    return self.grid.get_render(self.snakes)
+    """Permet de récupérer l'image du jeu
+
+    Returns:
+        np.array : Image de la représentation de la grille
+    """    
+    return self.grid.get_render(self.select_alive_snakes())
 
   def get_target(self):
+    """Permet de récupérer l'image des objectifs sur la grille
+
+    Returns:
+        np.array : Image de la représentation de la grille 
+    """    
     return self.grid.get_target_render()

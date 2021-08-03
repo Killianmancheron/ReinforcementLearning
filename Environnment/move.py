@@ -8,12 +8,18 @@ class Move():
     DOWN=3
 
     def __init__(self, coord, direction):
+        """Classe correspondant au mouvement effectué.
+
+        Args:
+            coord (np.array): Coordonnées initiales, avant le déplacement.
+            direction (int): Direction souhaitée.
+        """        
         self.coord = coord
         self.direction=direction
         
     def next_coord(self):    
         '''
-        Return a new coordonate from a direction and a coordonate
+        Retourne une nouvelle coordonnée à partir d'une direction et d'une position
         '''
         coord = self.coord
         direction = self.direction

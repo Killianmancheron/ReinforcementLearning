@@ -4,4 +4,4 @@ from .grid import Grid
 
 
 from .controller import Controller
-from .env import SnakeGame
+#from .env import SnakeGame
