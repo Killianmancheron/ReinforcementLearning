@@ -4,10 +4,20 @@ import random
 class Grid():
 
   # Couleur correspondant aux différentes cases
-  BODY_COLOR = np.array([0, 1., 0], dtype=np.uint8)
-  HEAD_COLOR = np.array([1., 0, 0], dtype=np.uint8)
-  APPLE_COLOR = np.array([0, 0, 1.], dtype=np.uint8)
-  SPACE_COLOR = np.array([0, 0, 0], dtype=np.uint8)
+  BODY_COLOR = [
+    np.array([0, .6, .2], dtype=np.float16),
+    np.array([0., .357, .588], dtype=np.float16),
+    np.array([0., .424, .424], dtype=np.float16),
+  ]
+  HEAD_COLOR = [
+    np.array([0., .4, .2], dtype=np.float16), #serpent vert
+    np.array([0.012, .223, .424], dtype=np.float16), #serpent bleu
+    np.array([0., .298, .298], dtype=np.float16), #serpent marine
+  ]
+  APPLE_COLOR = np.array([1., 0.251, 0.251], dtype=np.float16)
+  SPACE_COLOR = np.array([0.992, 0.961, 0.902], dtype=np.float16)
+  TARGET_COLOR = np.array([0.463, 0.933, 0.776], dtype=np.float16)
+  BACK_COLOR = np.array([0, 0, 0], dtype=np.float16)
 
   def __init__(self, size = (15,15), unit_size=10, unit_gap=1):
     """Classe correspondant à une référence de l'état du jeu. 
@@ -21,8 +31,6 @@ class Grid():
     self.unit_size = int(unit_size)
     self.unit_gap = unit_gap
     self.size=np.asarray(size, dtype=np.int)
-    self.height = self.size[1]*self.unit_size
-    self.width = self.size[0]*self.unit_size
     self.reset_board()
     self.apples = []
 
@@ -35,7 +43,7 @@ class Grid():
     """Mets à jour la grille en ajoutant des éléments sur la grille : les serpents et les pommes.
 
     Args:
-        snakes (list<snake>): Liste des différents serpents encore en vie dans l'environnement.
+        snakes (list<snake>): Liste des différents serpents de l'environnement.
 
     Returns:
         np.array: Grille actualisée avec les nouveaux éléments.
@@ -50,6 +58,8 @@ class Grid():
       self.board[apple[0]][apple[1]]=3
     # Ajout des serpents
     for snake in snakes:
+      if not snake.alive:
+        continue
       # Ajout du corps
       for coord in snake.body :
         self.board[coord[0]][coord[1]]=1
@@ -64,13 +74,13 @@ class Grid():
     possible=np.where(self.board==0)
     self.apples.append(np.asarray((random.choice(possible[0]),random.choice(possible[1]))).astype(int))
   
-  def drop_apple(self, coord):
+  def drop_apple(self, coordonate):
     """Retire un pomme de la liste des pommes
 
     Args:
-        coord (np.array): coordonées de la pomme à retirer
+        coordonate (np.array): coordonées de la pomme à retirer
     """    
-    self.apples = [apple for apple in self.apples if np.array_equal(apple, coord)]
+    self.apples = [apple for apple in self.apples if np.array_equal(apple, coordonate)]
 
   def color_case(self, coordonate, color):
     """Color la case située à une coordonnée dans la grille dans l'affichage selon une couleur définie
@@ -93,24 +103,32 @@ class Grid():
         np.array: Image de la grille
     """    
     # Coloration de l'arrière plan et des pommes
-    self.render = self.get_target_render()
+    self.render = self.get_target_render(back_color=self.SPACE_COLOR, target_color=self.APPLE_COLOR)
     # Coloration des serpents
-    for snake in snakes:
+    for i, snake in enumerate(snakes):
+      if not snake.alive :
+        continue
       for coord in snake.body:
-        self.color_case(coord, self.BODY_COLOR)
-      self.color_case(snake.head, self.HEAD_COLOR)
+        self.color_case(coord, self.BODY_COLOR[i])
+      self.color_case(snake.head, self.HEAD_COLOR[i])
     return self.render.copy()
 
-  def get_target_render(self):
+  def get_target_render(self, back_color = None, target_color=None):
     """Permet l'affichage de l'image correspondant à l'objectif
 
     Returns:
         [type]: [description]
     """    
-    self.render=np.zeros((self.height+self.unit_gap,self.width+self.unit_gap,3))
-    self.render[:,:,:]=self.SPACE_COLOR
+    if back_color is None :
+      back_color = self.BACK_COLOR
+    if target_color is None :
+      target_color = self.TARGET_COLOR
+    height = self.size[1]*self.unit_size
+    width = self.size[0]*self.unit_size
+    self.render=np.zeros((height+self.unit_gap,width+self.unit_gap,3))
+    self.render[:,:,:]=back_color
     for apple in self.apples : 
-      self.color_case(apple, self.APPLE_COLOR)
+      self.color_case(apple, target_color)
     return self.render.copy()
 
   

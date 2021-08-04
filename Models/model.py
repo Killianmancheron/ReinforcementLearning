@@ -1,16 +1,18 @@
 import tensorflow as tf
+from keras import Input, Model
+from keras.layers import Conv2D, MaxPool2D, Flatten, Dense, 
 
 def build_model(input_shape):
-  inputs = tf.keras.Input(shape=input_shape)
-  x = tf.keras.layers.Conv2D(32,5, activation='relu', padding='same')(inputs)
-  x = tf.keras.layers.MaxPool2D()(x)
-  x = tf.keras.layers.Conv2D(32,5, activation='relu', padding='same')(x)
-  x = tf.keras.layers.MaxPool2D()(x)
-  x = tf.keras.layers.Conv2D(1,3, activation='relu', padding='same')(x)
-  x = tf.keras.layers.Flatten()(x)
-  x = tf.keras.layers.Dense(512, activation=tf.nn.relu)(x)
-  x = tf.keras.layers.Dense(128, activation=tf.nn.relu)(x)
-  x = tf.keras.layers.Dense(32, activation=tf.nn.relu)(x)
-  outputs = tf.keras.layers.Dense(4, activation='sigmoid')(x)
-  model = tf.keras.Model(inputs=inputs, outputs=outputs)
+  inputs = Input(shape=input_shape)
+  x = Conv2D(32,5, activation='relu', padding='same')(inputs)
+  x = MaxPool2D()(x)
+  x = Conv2D(32,5, activation='relu', padding='same')(x)
+  x = MaxPool2D()(x)
+  x = Conv2D(1,3, activation='relu', padding='same')(x)
+  x = Flatten()(x)
+  x = Dense(512, activation=tf.nn.relu)(x)
+  x = Dense(128, activation=tf.nn.relu)(x)
+  x = Dense(32, activation=tf.nn.relu)(x)
+  outputs = Dense(4, activation='sigmoid')(x)
+  model = Model(inputs=inputs, outputs=outputs)
   return model

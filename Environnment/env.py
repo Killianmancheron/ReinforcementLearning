@@ -13,17 +13,17 @@ class SnakeGame():
     self.action_space = spaces.Discrete(4)
     self.viewer=None
 
-  def step(self, action):
-    if type(action)==int: # Action pour un seul serpent 
-      self.board, reward, done=self.controller.execute(action)
-      return self.board, reward, done
-    else :
-      self.board, reward, done = self.controller.execute_multiple(action)
+  def step(self, actions):
+    if type(actions)==int: # Action pour un seul serpent 
+      actions = [actions]
+    self.board, rewards, dones=self.controller.execute(actions)
+    return self.board, rewards, dones
 
   def reset(self):
     self.controller=Controller(self.grid_size, nb_snakes=self.nb_snakes)
     self.board=self.controller.get_board()
-    return self.board
+    self.target = self.controller.get_target()
+    return self.board, self.target
 
   def render(self, frame_speed=0.1):
     if self.viewer==None:

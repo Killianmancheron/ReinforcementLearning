@@ -15,23 +15,14 @@ class AbstractDeepQN():
     self.gamma = gamma
     self.batch_size = batch_size
     
-    #objets:
-    self.memory = deque(maxlen=20000)
-
     #etat:
     self.compiled = False
-
-  def random_batch_choice(self, memory):
-    index = np.random.choice(range(len(self.memory)),min(self.batch_size,len(self.memory)),replace=False)
-    batch = [memory[i] for i in index]
-    return batch
 
   def get_config(self):
     return {
         'nb_actions': self.nb_actions,
         'gamma': self.gamma,
-        'batch_size': self.batch_size,
-        'memory length': len(self.memory)
+        'batch_size': self.batch_size
     }
 
 class DeepQN(AbstractDeepQN):
@@ -93,16 +84,13 @@ class DeepQN(AbstractDeepQN):
     self.state = observation[0]
     return action
   
-  def backward(self, reward, done, observation):
+  def backward(self, Buffer): # reward, done, observation
     if not self.compiled :
       raise ValueError("Compiler l'algorithme avant le backward")
 
-    #enregistrer l'etat et le resultat courant dans la memoire
-    self.memory.append([self.state, self.last_action, reward, observation, done])
-    
     #selectionner un batch de memoire
-    num_batch = min(self.batch_size,len(self.memory))
-    experiences = random.sample(self.memory,num_batch)
+    num_batch = min(self.batch_size,len(Buffer))
+    experiences = random.sample(Buffer, num_batch)
         
     #copier les poids du model
     #self.update_target_model()

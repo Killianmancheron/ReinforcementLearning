@@ -16,8 +16,7 @@ class Abstract_Controller():
     self.grid_size = grid_size
     self.grid=Grid(grid_size)
     # Coordonnées maximales de la grille
-    self.max_x=grid_size[0]-1
-    self.max_y=grid_size[1]-1
+
     self.nb_snakes = nb_snakes
     # Positionne les serpents sur la grille
     self.init_snakes()
@@ -37,8 +36,7 @@ class Abstract_Controller():
       self.snakes=[Snake(init_coord=mid_grid)]
     else :
       spawn_points = self.get_spawn_points()
-      #self.snakes=[Snake(init_coord=coord) for coord in random.sample(spawn_points, self.nb_snakes)]
-      self.snakes=[Snake(init_coord=coord) for coord in [(6,6),(6,7)]]
+      self.snakes=[Snake(init_coord=coord) for coord in random.sample(spawn_points, self.nb_snakes)]
 
   def is_output(self, coord):
     """Permet de vérifier si des coordonnées sont hors de la grille ou non
@@ -49,7 +47,9 @@ class Abstract_Controller():
     Returns:
         Boolean: Vrai si les coordonnées sont valides
     """    
-    return (coord[0]<0 or coord[0]>self.max_x) or (coord[1]<0 or coord[1]>self.max_y)
+    max_x=self.grid_size[0]-1
+    max_y=self.grid_size[1]-1
+    return (coord[0]<0 or coord[0]>max_x) or (coord[1]<0 or coord[1]>max_y)
 
   def get_spawn_points(self):
     """Permet de récupérer l'ensembles des points où les têtes de serpents peuvent apparaître
