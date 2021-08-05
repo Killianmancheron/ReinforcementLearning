@@ -21,7 +21,7 @@ class SnakeGame():
     if self.nb_snakes==1:
       return self.board, rewards[0], dones[0], self.target
     else :
-      return self.board, rewards[0], dones[0], self.target
+      return self.board, rewards, dones, self.target
 
   def reset(self):
     self.controller=Controller(self.grid_size, nb_snakes=self.nb_snakes)

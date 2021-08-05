@@ -73,6 +73,9 @@ class Grid():
     """    
     possible=np.where(self.board==0)
     self.apples.append(np.asarray((random.choice(possible[0]),random.choice(possible[1]))).astype(int))
+    # Ajout des pommes sur la grille
+    for apple in self.apples:
+      self.board[apple[0]][apple[1]]=3
   
   def drop_apple(self, coordonate):
     """Retire un pomme de la liste des pommes
@@ -80,7 +83,7 @@ class Grid():
     Args:
         coordonate (np.array): coordonées de la pomme à retirer
     """    
-    self.apples = [apple for apple in self.apples if np.array_equal(apple, coordonate)]
+    self.apples = [apple for apple in self.apples if (not np.array_equal(apple, coordonate))]
 
   def color_case(self, coordonate, color):
     """Color la case située à une coordonnée dans la grille dans l'affichage selon une couleur définie

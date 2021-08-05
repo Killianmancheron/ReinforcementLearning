@@ -1,5 +1,5 @@
 from collections import deque
-from numpy.random import sample
+from random import sample
 
 class Buffer():
 
@@ -16,4 +16,4 @@ class Buffer():
     def sample_batch(self, batch_size=32):
         #selectionner un batch de memoire
         num_batch = min(batch_size,len(self.memory))
-        experiences = sample(self.memory, num_batch)
+        return sample(self.memory, num_batch)

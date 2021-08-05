@@ -105,6 +105,7 @@ class Controller(Abstract_Controller):
       if np.array_equal(next_coord,apple):
         # On retire la pomme de la liste
         self.grid.drop_apple(apple)
+        print(self.grid.apples)
         return 1
     # Suppression de la queue
     snake.body.popleft()
@@ -134,11 +135,13 @@ class Controller(Abstract_Controller):
         snake.action(direction)
     # Gestion de la collision sur tous les serpents
     self.control_collision(rewards)
+    self.grid.update_board(self.snakes)
     # On souhaite autant de pommes que de serpents vivants
     while len(self.grid.apples)<len(self.select_alive_snakes()):
       self.grid.spawn_apple()
-    self.grid.update_board(self.snakes)
-    rewards = self.harmonic(rewards)
+
+    if self.nb_snakes!=1:
+      rewards = self.harmonic(rewards)
     return self.get_board(), rewards, self.dones_snakes()
 
   def control_collision(self, rewards):
