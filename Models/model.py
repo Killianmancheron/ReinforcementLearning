@@ -1,6 +1,6 @@
 import tensorflow as tf
 from keras import Input, Model
-from keras.layers import Conv2D, MaxPool2D, Flatten, Dense, 
+from keras.layers import Conv2D, MaxPool2D, Flatten, Dense
 
 def build_model(input_shape):
   inputs = Input(shape=input_shape)

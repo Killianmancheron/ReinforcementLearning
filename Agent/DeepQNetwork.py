@@ -3,7 +3,6 @@ import keras
 import numpy as np
 from keras.models import Model
 from collections import deque
-from Policies import EpsGreedy
 import time
 
 
@@ -27,19 +26,13 @@ class AbstractDeepQN():
 
 class DeepQN(AbstractDeepQN):
 
-  def __init__(self, model, policy = None, *args, **kwargs):
+  def __init__(self, model, *args, **kwargs):
     #on hérite des paramètres de la classe abstraite
     super(DeepQN, self).__init__(*args, **kwargs)
 
     if model.output.shape.as_list() != [None, self.nb_actions]:
       raise ValueError("Le model doit avoir un output avec autant d'actions possibles")
-
-    if policy is None :
-      policy = EpsGreedy()
-    
-    self.policy = policy
     self.model = model
-    
     #etat :
     self.reset_states()
 
@@ -74,30 +67,21 @@ class DeepQN(AbstractDeepQN):
     self.model.compile(optimizer=optimizer, loss='mse')
     self.compiled = True
 
-  def forward(self, observation):
+  def Q_values(self, state):
+    state = np.array(state).reshape((-1,state.shape[0],state.shape[1],state.shape[2]))
+    return np.array(self.model([state])[0])
 
-    observation = np.array(observation).reshape((-1,observation.shape[0],observation.shape[1],observation.shape[2]))
-    q_values = np.array(self.model([observation])[0])
-    action = self.policy.select_action(q_values = q_values) 
-    #enregistrement de l'etat d'entree et de l'action choisi
-    self.last_action = action
-    self.state = observation[0]
-    return action
-  
-  def backward(self, Buffer): # reward, done, observation
+  def update(self, batch): # reward, done, observation
     if not self.compiled :
-      raise ValueError("Compiler l'algorithme avant le backward")
+      raise ValueError("Compiler l'algorithme avant la mise à jour des poids")
 
-    #selectionner un batch de memoire
-    num_batch = min(self.batch_size,len(Buffer))
-    experiences = random.sample(Buffer, num_batch)
-        
+    num_batch = len(batch)
     #copier les poids du model
     #self.update_target_model()
     #
     states=[]
     observations=[]
-    for state, action, reward, observation, done in experiences:
+    for state, action, reward, observation, done in batch:
       states.append(list(state))
       observations.append(list(observation))
     states = np.array(states).reshape(num_batch,observation.shape[0],observation.shape[1],observation.shape[2])
@@ -105,9 +89,8 @@ class DeepQN(AbstractDeepQN):
 
     targets = np.array(self.model(states))
     observation_targets = np.array(self.target_model(observations))
-
  
-    for i, experience in enumerate(experiences):
+    for i, experience in enumerate(batch):
       state, action, reward, observation, done = experience
       target = targets[i]
       if done :

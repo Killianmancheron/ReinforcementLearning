@@ -139,7 +139,7 @@ class Controller(Abstract_Controller):
       self.grid.spawn_apple()
     self.grid.update_board(self.snakes)
     rewards = self.harmonic(rewards)
-    return self.get_board(), rewards, self.is_alive()
+    return self.get_board(), rewards, self.dones_snakes()
 
   def control_collision(self, rewards):
     """Gère les collisions entre serpents. S'appui sur les serpents en vie uniquement.
@@ -169,13 +169,13 @@ class Controller(Abstract_Controller):
     """    
     return [snake for snake in self.snakes if snake.alive]
 
-  def is_alive(self):
+  def dones_snakes(self):
     """Renvoie une liste des serpents de booléen avec True si un serpent est en vie
 
     Returns:
         List<boolean>: Liste informant si un serpent est vivant ou non
     """    
-    return [snake.alive for snake in self.snakes]
+    return [(not snake.alive) for snake in self.snakes]
 
   def is_done(self):
     """Permet de savoir si la partie est finie ou non. 

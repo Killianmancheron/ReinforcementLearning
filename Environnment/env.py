@@ -14,10 +14,14 @@ class SnakeGame():
     self.viewer=None
 
   def step(self, actions):
-    if type(actions)==int: # Action pour un seul serpent 
+    if self.nb_snakes==1: # Action pour un seul serpent 
       actions = [actions]
     self.board, rewards, dones=self.controller.execute(actions)
-    return self.board, rewards, dones
+    self.target = self.controller.get_target()
+    if self.nb_snakes==1:
+      return self.board, rewards[0], dones[0], self.target
+    else :
+      return self.board, rewards[0], dones[0], self.target
 
   def reset(self):
     self.controller=Controller(self.grid_size, nb_snakes=self.nb_snakes)
