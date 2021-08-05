@@ -21,11 +21,13 @@ class Abstract_Controller():
     # Positionne les serpents sur la grille
     self.init_snakes()
 
+    # On actualise la grille avec tous les éléments
+    self.grid.update_board(self.snakes)
+
     # On fait appraître autant de pommes que de serpents
     for _ in range(nb_snakes):
       self.grid.spawn_apple()
-    # On actualise la grille avec tous les éléments
-    self.grid.update_board(self.snakes)
+
 
   def init_snakes(self):
     """Permet de faire apparaître les serpents sur la grille et les enregistre dans une liste

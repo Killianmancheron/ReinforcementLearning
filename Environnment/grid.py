@@ -72,10 +72,11 @@ class Grid():
     """Fais apparaître un pomme sur la grille. Ne peut apparaître que sur un emplacement vide.
     """    
     possible=np.where(self.board==0)
-    self.apples.append(np.asarray((random.choice(possible[0]),random.choice(possible[1]))).astype(int))
-    # Ajout des pommes sur la grille
-    for apple in self.apples:
-      self.board[apple[0]][apple[1]]=3
+    index=np.random.randint(0,len(possible))
+    new_apple = np.asarray((possible[0][index],possible[1][index])).astype(int)
+    self.apples.append(new_apple)
+    # Ajout de la nouvelle pomme sur la grille
+    self.board[new_apple[0]][new_apple[1]]=3
   
   def drop_apple(self, coordonate):
     """Retire un pomme de la liste des pommes
