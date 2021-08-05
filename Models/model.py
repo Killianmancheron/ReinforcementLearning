@@ -13,6 +13,6 @@ def build_model(input_shape):
   x = Dense(512, activation=tf.nn.relu)(x)
   x = Dense(128, activation=tf.nn.relu)(x)
   x = Dense(32, activation=tf.nn.relu)(x)
-  outputs = Dense(4, activation='sigmoid')(x)
+  outputs = Dense(4, activation='linear')(x)
   model = Model(inputs=inputs, outputs=outputs)
   return model
