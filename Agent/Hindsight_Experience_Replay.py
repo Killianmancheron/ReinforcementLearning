@@ -1,5 +1,5 @@
 from collections import deque
-from .reward import Modified_Reward
+from .utils import Modified_Reward
 from keras.layers import concatenate
 
 class HER():

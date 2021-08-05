@@ -72,7 +72,7 @@ class Grid():
     """Fais apparaître un pomme sur la grille. Ne peut apparaître que sur un emplacement vide.
     """    
     possible=np.where(self.board==0)
-    index=np.random.randint(0,len(possible))
+    index=np.random.randint(0,len(possible[0]))
     new_apple = np.asarray((possible[0][index],possible[1][index])).astype(int)
     self.apples.append(new_apple)
     # Ajout de la nouvelle pomme sur la grille
