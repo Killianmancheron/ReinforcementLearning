@@ -107,7 +107,6 @@ class Controller(Abstract_Controller):
       if np.array_equal(next_coord,apple):
         # On retire la pomme de la liste
         self.grid.drop_apple(apple)
-        print(self.grid.apples)
         return 1
     # Suppression de la queue
     snake.body.popleft()
