@@ -33,12 +33,19 @@ class Abstract_Controller():
     """Permet de faire apparaître les serpents sur la grille et les enregistre dans une liste
     """    
     assert (self.nb_snakes>0)|(self.nb_snakes<10), "Nombre de serpents limités de 1 à 9"
+    mid_grid=tuple([int(x/2) for x in self.grid_size])
     if self.nb_snakes==1:
-      mid_grid=tuple([int(x/2) for x in self.grid_size])
+      
       self.snakes=[Snake(init_coord=mid_grid, id=1)]
     else :
       spawn_points = self.get_spawn_points()
-      self.snakes=[Snake(init_coord=coord,id=2*i+1) for i,coord in enumerate(random.sample(spawn_points, self.nb_snakes))]
+      self.snakes=[]
+      for i in range(self.nb_snakes):
+        direction ='top' if i==1 else 'down'
+        spawn_coord = np.array([10-6*i,mid_grid[1]])
+        print(spawn_coord)
+        self.snakes.append(Snake(init_coord=spawn_coord,id=2*i+1, direction=direction))
+       
 
   def is_output(self, coord):
     """Permet de vérifier si des coordonnées sont hors de la grille ou non
@@ -231,7 +238,7 @@ class Controller(Abstract_Controller):
     Returns:
         np.array : Image de la représentation de la grille
     """    
-    return self.grid.board #.get_render(self.select_alive_snakes())
+    return self.grid.get_render(self.select_alive_snakes())
 
   def get_target(self):
     """Permet de récupérer l'image des objectifs sur la grille

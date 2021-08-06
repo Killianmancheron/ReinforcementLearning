@@ -53,6 +53,7 @@ class Grid():
             3 : pomme
     """    
     self.reset_board()
+    print(snakes)
     # Ajout des pommes
     for apple in self.apples:
       self.board[apple[0]][apple[1]]=-1
@@ -75,6 +76,7 @@ class Grid():
         for coord in snake.body :
           self.board[coord[0]][coord[1]]=snake.id
           # Ajout de la tête
+        
         head=snake.head
         self.board[head[0]][head[1]]=snake.id+1
     return self.board.copy()
@@ -134,19 +136,16 @@ class Grid():
     Returns:
         [type]: [description]
     """    
-    board=np.zeros(self.size)
-    for apple in self.apples:
-      self.board[apple[0]][apple[1]]=-1
-    # if back_color is None :
-    #   back_color = self.BACK_COLOR
-    # if target_color is None :
-    #   target_color = self.TARGET_COLOR
-    # height = self.size[1]*self.unit_size
-    # width = self.size[0]*self.unit_size
-    # self.render=np.zeros((height+self.unit_gap,width+self.unit_gap,3))
-    # self.render[:,:,:]=back_color
-    # for apple in self.apples : 
-    #   self.color_case(apple, target_color)
-    # return self.render.copy()
+    if back_color is None :
+      back_color = self.BACK_COLOR
+    if target_color is None :
+      target_color = self.TARGET_COLOR
+    height = self.size[1]*self.unit_size
+    width = self.size[0]*self.unit_size
+    self.render=np.zeros((height+self.unit_gap,width+self.unit_gap,3))
+    self.render[:,:,:]=back_color
+    for apple in self.apples : 
+      self.color_case(apple, target_color)
+    return self.render.copy()
 
   
