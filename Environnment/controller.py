@@ -143,7 +143,12 @@ class Controller(Abstract_Controller):
 
     if self.nb_snakes!=1:
       rewards = self.harmonic(rewards)
-    return self.get_board(), rewards, self.dones_snakes()
+
+    if self.is_done():
+      dones = [True for snake in self.snakes]
+    else :
+      dones = self.dones_snakes()
+    return self.get_board(), rewards, dones
 
   def control_collision(self, rewards):
     """Gère les collisions entre serpents. S'appui sur les serpents en vie uniquement.
@@ -191,9 +196,10 @@ class Controller(Abstract_Controller):
     """    
     nb_snakes=len(self.snakes)
     nb_alives=sum([snake.alive for snake in self.snakes])
+    print(nb_snakes, nb_alives)
     if (nb_snakes==1) and (nb_alives==0):
       return True
-    if (nb_snakes>1) and (nb_alives==1):
+    if (nb_snakes>1) and (nb_alives<=1):
       return True
     return False
 
@@ -213,10 +219,10 @@ class Controller(Abstract_Controller):
     new_rewards = np.zeros(nb_snakes)
     # Gestion des serpents avec une récompense de +1
     Bonus = sum([(reward==1) for reward in rewards])
-    new_rewards+=np.where(np.array(rewards)==1,(nb_snakes-Bonus)/nb_snakes, -Bonus/nb_snakes)
+    new_rewards+=np.where(np.array(rewards)==1,(nb_snakes-Bonus), -Bonus)
     # Gestion des serpents avec une récompense de -1
     Malus = sum([(reward==-1) for reward in rewards])
-    new_rewards+=np.where(np.array(rewards)==-1,-(nb_snakes-Malus)/nb_snakes, Malus/nb_snakes)
+    new_rewards+=np.where(np.array(rewards)==-1,-(nb_snakes-Malus), Malus)
     return new_rewards
   
   # Getters

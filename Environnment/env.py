@@ -1,16 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import gym
-from gym import spaces
 from Environnment import Controller
 
 class SnakeGame():
 
-  def __init__(self, grid_size=(15,15), nb_snakes=1):
+  def __init__(self, grid_size=(15,15), nb_snakes=1, goals=False):
     self.grid_size = grid_size
     self.nb_snakes = nb_snakes
-    # Define action and observation space
-    self.action_space = spaces.Discrete(4)
+    self.goals = goals
     self.viewer=None
 
   def step(self, actions):
@@ -18,16 +15,27 @@ class SnakeGame():
       actions = [actions]
     self.board, rewards, dones=self.controller.execute(actions)
     self.target = self.controller.get_target()
+
     if self.nb_snakes==1:
-      return self.board, rewards[0], dones[0], self.target
+      if self.goals :
+        return self.board, rewards[0], dones[0], self.target
+      else :
+        return self.board, rewards[0], dones[0]
     else :
-      return self.board, rewards, dones, self.target
+      if self.goals :
+        return self.board, rewards, dones, self.target
+      else :
+        return self.board, rewards, dones
 
   def reset(self):
+    print(self.goals)
     self.controller=Controller(self.grid_size, nb_snakes=self.nb_snakes)
     self.board=self.controller.get_board()
     self.target = self.controller.get_target()
-    return self.board, self.target
+    if self.goals :
+      return self.board, self.target
+    else : 
+      return self.board
 
   def render(self, frame_speed=0.1):
     if self.viewer==None:
