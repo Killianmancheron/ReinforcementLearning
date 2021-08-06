@@ -53,7 +53,6 @@ class Grid():
             3 : pomme
     """    
     self.reset_board()
-    print(snakes)
     # Ajout des pommes
     for apple in self.apples:
       self.board[apple[0]][apple[1]]=-1
