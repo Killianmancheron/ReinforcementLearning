@@ -28,7 +28,6 @@ class SnakeGame():
         return self.board, rewards, dones
 
   def reset(self):
-    print(self.goals)
     self.controller=Controller(self.grid_size, nb_snakes=self.nb_snakes)
     self.board=self.controller.get_board()
     self.target = self.controller.get_target()

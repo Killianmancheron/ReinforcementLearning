@@ -196,7 +196,6 @@ class Controller(Abstract_Controller):
     """    
     nb_snakes=len(self.snakes)
     nb_alives=sum([snake.alive for snake in self.snakes])
-    print(nb_snakes, nb_alives)
     if (nb_snakes==1) and (nb_alives==0):
       return True
     if (nb_snakes>1) and (nb_alives<=1):
