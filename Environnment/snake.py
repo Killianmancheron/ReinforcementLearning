@@ -17,7 +17,6 @@ class Snake():
     self.id=id
     self.head = np.asarray(init_coord).astype(np.int)
     # Le corps est placé automatiquement de haut en bas
-    print(direction)
     if direction=='top':
       for i in range(body_length-1, 0, -1):
           self.body.append(self.head+np.asarray([i,0]).astype(np.int))
@@ -25,7 +24,6 @@ class Snake():
       for i in range(body_length-1, 0, -1):
           self.body.append(self.head-np.asarray([i,0]).astype(np.int))
     # La tête du serpent sera toujours le dernier élément du deque
-    print(self.body)
     self.body.append(self.head)
       
   def action(self, direction):
