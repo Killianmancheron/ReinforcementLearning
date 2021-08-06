@@ -10,13 +10,12 @@ def one_hot(action, k=4):
 
 class MARL_DeepQN():
 
-  def __init__(self, model, joueur, gamma =.99, batch_size = 32):
+  def __init__(self, model, joueur, gamma =.99):
     #model:
     self.model = model
 
     #constantes:
     self.gamma = gamma
-    self.batch_size = batch_size
     self.joueur=joueur
     
     #etat:
@@ -51,10 +50,9 @@ class MARL_DeepQN():
   def one_hot(action):
     return [int(action==i) for i in range(4)]
 
-  def Q_values(self, state, action):
+  def Q_values(self, state):
     state = np.array(state).reshape((-1,)+state.shape)
-    action = np.array(one_hot(action)).reshape(-1,4)
-    return np.array([max(self.model([state,action])[0].numpy() for action in range(4))])
+    return np.array([min(self.model([state,np.array(one_hot(action)).reshape(-1,4)])[0].numpy() for action in range(4))])
 
   def eval(self, states):
     values = []
