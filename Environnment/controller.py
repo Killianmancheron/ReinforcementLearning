@@ -41,7 +41,7 @@ class Abstract_Controller():
       spawn_points = self.get_spawn_points()
       self.snakes=[]
       for i in range(self.nb_snakes):
-        direction ='top' if i==1 else 'down'
+        direction ='top' if i==0 else 'down'
         spawn_coord = np.array([10-6*i,mid_grid[1]])
         self.snakes.append(Snake(init_coord=spawn_coord,id=2*i+1, direction=direction))
        

@@ -12,7 +12,7 @@ plt.imshow(state)
 plt.show()
 while not all(dones):
 
-    state, rewards, dones = env.step([0,1])
+    state, rewards, dones = env.step([0,3])
     plt.imshow(state)
     plt.show()
     print(dones)
