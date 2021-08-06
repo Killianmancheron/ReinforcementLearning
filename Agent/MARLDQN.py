@@ -6,6 +6,9 @@ from collections import deque
 import time
 from .DeepQNetwork import DeepQN
 
+def one_hot(action, k=4):
+  return [int(action==i) for i in range(k)]
+
 class MARL_DeepQN(DeepQN):
 
     
@@ -38,12 +41,10 @@ class DeepQN(AbstractDeepQN):
       raise ValueError("Le model doit avoir un output avec autant d'actions possibles")
     self.model = model
     #etat :
-    self.reset_states()
+    self.reset_state()
 
-  def reset_states(self):
+  def reset_state(self):
     self.compiled = False
-    self.last_action = None
-    self.state = None
 
   def update_target_model(self):
     '''Copier les poids de Q dans Q_target
@@ -71,9 +72,12 @@ class DeepQN(AbstractDeepQN):
     self.model.compile(optimizer=optimizer, loss='mse')
     self.compiled = True
 
-  def Q_values(self, state):
+
+
+  def Q_values(self, state, action):
     state = np.array(state).reshape((-1,state.shape[0],state.shape[1],state.shape[2]))
-    return np.array(self.model([state])[0])
+    action = np.array(one_hot(action)).reshape(-1,4)
+    return np.array(self.model([state,action])[0])
 
   def update(self, batch): # reward, done, observation
     if not self.compiled :
@@ -84,11 +88,14 @@ class DeepQN(AbstractDeepQN):
     #self.update_target_model()
     #
     states=[]
+    actions=[]
     observations=[]
     for state, action, reward, observation, done in batch:
       states.append(list(state))
+      actions.append(list(action))
       observations.append(list(observation))
     states = np.array(states).reshape(num_batch,observation.shape[0],observation.shape[1],observation.shape[2])
+    actions = np.array(actions).reshape(num_batch,4)
     observations = np.array(observations).reshape(num_batch,observation.shape[0],observation.shape[1],observation.shape[2])
 
     targets = np.array(self.model(states))

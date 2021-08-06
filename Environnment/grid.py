@@ -123,16 +123,8 @@ class Grid():
     Returns:
         [type]: [description]
     """    
-    if back_color is None :
-      back_color = self.BACK_COLOR
-    if target_color is None :
-      target_color = self.TARGET_COLOR
-    height = self.size[1]*self.unit_size
-    width = self.size[0]*self.unit_size
-    self.render=np.zeros((height+self.unit_gap,width+self.unit_gap,3))
-    self.render[:,:,:]=back_color
-    for apple in self.apples : 
-      self.color_case(apple, target_color)
-    return self.render.copy()
-
+    self.reset_board()
+    # Ajout des pommes
+    for apple in self.apples:
+      self.board[apple[0]][apple[1]]=3
   

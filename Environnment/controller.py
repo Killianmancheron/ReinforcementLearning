@@ -231,7 +231,7 @@ class Controller(Abstract_Controller):
     Returns:
         np.array : Image de la représentation de la grille
     """    
-    return self.grid.get_render(self.select_alive_snakes())
+    return self.grid.board
 
   def get_target(self):
     """Permet de récupérer l'image des objectifs sur la grille
