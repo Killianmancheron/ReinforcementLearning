@@ -5,7 +5,7 @@ from .move import Move
 
 class Snake():
 
-  def __init__(self, init_coord ,body_length=3):
+  def __init__(self, init_coord, id, body_length=3):
     """Classe correspondant aux serpents et aux méthodes relatives.
 
     Args:
@@ -14,6 +14,7 @@ class Snake():
     """    
     self.body=deque()
     self.alive=True
+    self.id=id
     self.head = np.asarray(init_coord).astype(np.int)
     # Le corps est placé automatiquement de haut en bas
     for i in range(body_length-1, 0, -1):

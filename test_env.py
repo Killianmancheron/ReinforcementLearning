@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 from Environnment import Controller, snake
 from Environnment import SnakeGame
 
-env = SnakeGame((15,15),1)
+env = SnakeGame((15,15),2)
 state= env.reset()
 
-
+print(state)
 dones = [False for _ in range(2)]
 plt.imshow(state)
 plt.show()
