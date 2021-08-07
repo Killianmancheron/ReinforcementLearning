@@ -88,7 +88,7 @@ class Controller(Abstract_Controller):
         nb_snakes (int, optional): Nombre de serpents. Defaults to 1.
     """    
     Abstract_Controller.__init__(self, grid_size, nb_snakes, nb_apples=1,seed=None)
-    self.goals =goals
+    self.goals =False
 
   def get_reward(self, snake, direction):
     """Permet de récupérer une récompense pour un serpent et une action.

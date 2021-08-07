@@ -3,9 +3,13 @@ import matplotlib.pyplot as plt
 from Environnment import Controller, snake
 from Environnment import SnakeGame
 
-env = SnakeGame((15,15),2)
-state= env.reset()
-
+env = SnakeGame((15,15),goals=True)
+state, goal= env.reset()
+plt.imshow(state)
+plt.show()
+plt.imshow(goal)
+plt.show()
+exit()
 print(state)
 dones = [False for _ in range(2)]
 plt.imshow(state)
@@ -19,13 +23,11 @@ while not all(dones):
     print(rewards)
 
     # a faire:
-    # Refaire rewards et apple spaws (regler pb end game)
     # tester MARL DQN 
-
-    # en parallèle :
-    # aggréger courbe, gif model, screen state interessant
-    # tester 15*15
-    # faire HER 5*5, normalement HER doit réussir mieux
+    # reduire taille MARL
+    # 
+    #     # en parallèle :
+    #=> faire HER 5*5, normalement HER doit réussir mieux
     # faire HER 15*15 normalement HER doit réussir mieux
     # IMPORTANT : RESOUDRE CE PROBLEME CAR SINON HORRIBLE
-    # Regarder comment marl se comporte
+    

@@ -16,8 +16,8 @@ class Grid():
   ]
   APPLE_COLOR = np.array([1., 0.251, 0.251], dtype=np.float16)
   SPACE_COLOR = np.array([0.992, 0.961, 0.902], dtype=np.float16)
-  TARGET_COLOR = np.array([0.463, 0.933, 0.776], dtype=np.float16)
-  BACK_COLOR = np.array([0, 0, 0], dtype=np.float16)
+  TARGET_COLOR = np.array([1], dtype=np.float16)
+  BACK_COLOR = np.array([0], dtype=np.float16)
 
   def __init__(self, size = (15,15), unit_size=10, unit_gap=1, seed=None):
     """Classe correspondant à une référence de l'état du jeu. 
