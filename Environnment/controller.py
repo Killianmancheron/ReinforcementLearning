@@ -6,7 +6,7 @@ from .grid import Grid
 
 class Abstract_Controller():
 
-  def __init__(self, grid_size=(15,15), nb_snakes=1, nb_apples=1):
+  def __init__(self, grid_size=(15,15), nb_snakes=1, nb_apples=1,seed=None):
     """Classe abstraite du controleur pour l'encapsulation de la grille
 
     Args:
@@ -14,7 +14,7 @@ class Abstract_Controller():
         nb_snakes (int, optional): Nombre de serpents. Defaults to 1.
     """    
     self.grid_size = grid_size
-    self.grid=Grid(grid_size)
+    self.grid=Grid(grid_size, seed=seed)
     # Coordonnées maximales de la grille
 
     self.nb_apples = nb_apples
@@ -80,15 +80,15 @@ class Abstract_Controller():
   
 class Controller(Abstract_Controller):
 
-  def __init__(self, grid_size=(15,15), nb_snakes=1):
+  def __init__(self, grid_size=(15,15), nb_snakes=1, nb_apples=1, goals=False):
     """Classe permettant le controle de la grille avec le serpent, de vérifier si des déplacements sont possibles, etc.
 
     Args:
         grid_size (tuple, optional): Taille de la grille. Defaults to (15,15).
         nb_snakes (int, optional): Nombre de serpents. Defaults to 1.
     """    
-    Abstract_Controller.__init__(self, grid_size, nb_snakes)
-    
+    Abstract_Controller.__init__(self, grid_size, nb_snakes, nb_apples=1,seed=None)
+    self.goals =goals
 
   def get_reward(self, snake, direction):
     """Permet de récupérer une récompense pour un serpent et une action.
@@ -247,7 +247,10 @@ class Controller(Abstract_Controller):
     Returns:
         np.array : Image de la représentation de la grille
     """    
-    return self.grid.get_render(self.select_alive_snakes())
+    if self.goals:
+      return self.grid.get_render_without_apple(self.select_alive_snakes())
+    else:
+      return self.grid.get_render(self.select_alive_snakes())
 
   def get_target(self):
     """Permet de récupérer l'image des objectifs sur la grille

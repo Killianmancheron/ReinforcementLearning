@@ -19,7 +19,7 @@ class Grid():
   TARGET_COLOR = np.array([0.463, 0.933, 0.776], dtype=np.float16)
   BACK_COLOR = np.array([0, 0, 0], dtype=np.float16)
 
-  def __init__(self, size = (15,15), unit_size=10, unit_gap=1):
+  def __init__(self, size = (15,15), unit_size=10, unit_gap=1, seed=None):
     """Classe correspondant à une référence de l'état du jeu. 
     Gère l'appaparition d'une pomme et le rendu de la grille en image.
 
