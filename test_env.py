@@ -19,10 +19,12 @@ while not all(dones):
     print(rewards)
 
     # a faire:
-    # tester model avec etat action => action (pas le choix à ce stade)
-    # implémenter MARL DQN et le tester
+    # Refaire rewards et apple spaws (regler pb end game)
+    # tester MARL DQN 
+
     # en parallèle :
-    # faire 5*5 DQN avec param optimaux et tester 15*15
+    # aggréger courbe, gif model, screen state interessant
+    # tester 15*15
     # faire HER 5*5, normalement HER doit réussir mieux
     # faire HER 15*15 normalement HER doit réussir mieux
     # IMPORTANT : RESOUDRE CE PROBLEME CAR SINON HORRIBLE

@@ -6,7 +6,7 @@ from .grid import Grid
 
 class Abstract_Controller():
 
-  def __init__(self, grid_size=(15,15), nb_snakes=1):
+  def __init__(self, grid_size=(15,15), nb_snakes=1, nb_apples=1):
     """Classe abstraite du controleur pour l'encapsulation de la grille
 
     Args:
@@ -17,6 +17,7 @@ class Abstract_Controller():
     self.grid=Grid(grid_size)
     # Coordonnées maximales de la grille
 
+    self.nb_apples = nb_apples
     self.nb_snakes = nb_snakes
     # Positionne les serpents sur la grille
     self.init_snakes()
@@ -25,7 +26,7 @@ class Abstract_Controller():
     self.grid.update_board(self.snakes)
 
     # On fait appraître autant de pommes que de serpents
-    for _ in range(nb_snakes):
+    for _ in range(nb_apples):
       self.grid.spawn_apple()
 
 
@@ -38,7 +39,7 @@ class Abstract_Controller():
       
       self.snakes=[Snake(init_coord=mid_grid, id=1)]
     else :
-      spawn_points = self.get_spawn_points()
+      # spawn_points = self.get_spawn_points()
       self.snakes=[]
       for i in range(self.nb_snakes):
         direction ='top' if i==0 else 'down'
@@ -107,7 +108,10 @@ class Controller(Abstract_Controller):
     # Gestion de l'action hors de la grille
     if self.is_output(next_coord):
       snake.alive=False
-      return -1
+      if self.nb_snakes>1:
+        return -10
+      else:
+        return -1
     # Gestion des pommes
     for apple in self.grid.apples :
       if np.array_equal(next_coord,apple):
@@ -119,7 +123,10 @@ class Controller(Abstract_Controller):
     # Gestion colision avec queue
     if any((next_coord == x).all() for x in snake.body):
       snake.alive=False
-      return -1
+      if self.nb_snakes>1:
+        return -10
+      else :
+        return -1
     return 0
 
   def execute(self, directions):
@@ -144,7 +151,7 @@ class Controller(Abstract_Controller):
     self.control_collision(rewards)
     self.grid.update_board(self.snakes)
     # On souhaite autant de pommes que de serpents vivants
-    while len(self.grid.apples)<len(self.select_alive_snakes()):
+    while len(self.grid.apples)<self.nb_apples:
       self.grid.spawn_apple()
 
     if self.nb_snakes!=1:
@@ -172,7 +179,10 @@ class Controller(Abstract_Controller):
       for other_snake in other_snakes:
         # Vérification si la tête du serpent se trouve dans le corps des autres serpents
         if any((snake.head == x).all() for x in other_snake.body):
-          rewards[i]-=1
+          if self.nb_snakes>1:
+            rewards[i]-=10
+          else :
+            rewards[i]-=1
           snake.alive=False
     return rewards
 
@@ -226,8 +236,8 @@ class Controller(Abstract_Controller):
     Bonus = sum([(reward==1) for reward in rewards])
     new_rewards+=np.where(np.array(rewards)==1,(nb_snakes-Bonus), -Bonus)
     # Gestion des serpents avec une récompense de -1
-    Malus = sum([(reward==-1) for reward in rewards])
-    new_rewards+=np.where(np.array(rewards)==-1,-(nb_snakes-Malus), Malus)
+    Malus = sum([(reward==-10) for reward in rewards])
+    new_rewards+=np.where(np.array(rewards)==-10,-(nb_snakes-Malus), Malus)
     return new_rewards
   
   # Getters

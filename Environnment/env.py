@@ -4,9 +4,10 @@ from Environnment import Controller
 
 class SnakeGame():
 
-  def __init__(self, grid_size=(15,15), nb_snakes=1, goals=False):
+  def __init__(self, grid_size=(15,15), nb_snakes=1, nb_apples=1, goals=False):
     self.grid_size = grid_size
     self.nb_snakes = nb_snakes
+    self.nb_apples = nb_apples
     self.goals = goals
     self.viewer=None
 
@@ -28,7 +29,7 @@ class SnakeGame():
         return self.board, rewards, dones
 
   def reset(self):
-    self.controller=Controller(self.grid_size, nb_snakes=self.nb_snakes)
+    self.controller=Controller(self.grid_size, nb_snakes=self.nb_snakes, nb_apples=self.nb_apples)
     self.board=self.controller.get_board()
     self.target = self.controller.get_target()
     if self.goals :
