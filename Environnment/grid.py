@@ -128,6 +128,27 @@ class Grid():
         self.color_case(coord, self.BODY_COLOR[i])
       self.color_case(snake.head, self.HEAD_COLOR[i])
     return self.render.copy()
+  
+  def get_render_without_apple(self,snakes):
+    """Permet l'affichage de la grille en image.
+
+    Args:
+        snakes (list<snake>): Liste des serpents présents sur la grille
+
+    Returns:
+        np.array: Image de la grille
+    """    
+    # Coloration de l'arrière plan et des pommes
+    self.render = self.get_target_render(back_color=self.SPACE_COLOR, target_color=self.SPACE_COLOR)
+    # Coloration des serpents
+    for i, snake in enumerate(snakes):
+      if not snake.alive :
+        continue
+      for coord in snake.body:
+        self.color_case(coord, self.BODY_COLOR[i])
+      self.color_case(snake.head, self.HEAD_COLOR[i])
+    return self.render.copy()
+  
 
   def get_target_render(self, back_color = None, target_color=None):
     """Permet l'affichage de l'image correspondant à l'objectif
