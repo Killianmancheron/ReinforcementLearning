@@ -5,6 +5,7 @@ from Environnment import SnakeGame
 
 env = SnakeGame((15,15),goals=True)
 state, goal= env.reset()
+print(goal.shape)
 plt.imshow(state)
 plt.show()
 plt.imshow(goal)

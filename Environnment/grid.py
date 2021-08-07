@@ -119,7 +119,12 @@ class Grid():
         np.array: Image de la grille
     """    
     # Coloration de l'arrière plan et des pommes
-    self.render = self.get_target_render(back_color=self.SPACE_COLOR, target_color=self.APPLE_COLOR)
+    height = self.size[1]*self.unit_size
+    width = self.size[0]*self.unit_size
+    self.render=np.zeros((height+self.unit_gap,width+self.unit_gap,3))
+    self.render[:,:,:]=self.SPACE_COLOR
+    for apple in self.apples : 
+      self.color_case(apple, self.APPLE_COLOR)
     # Coloration des serpents
     for i, snake in enumerate(snakes):
       if not snake.alive :
@@ -139,7 +144,12 @@ class Grid():
         np.array: Image de la grille
     """    
     # Coloration de l'arrière plan et des pommes
-    self.render = self.get_target_render(back_color=self.SPACE_COLOR, target_color=self.SPACE_COLOR)
+    height = self.size[1]*self.unit_size
+    width = self.size[0]*self.unit_size
+    self.render=np.zeros((height+self.unit_gap,width+self.unit_gap,3))
+    self.render[:,:,:]=self.SPACE_COLOR
+    for apple in self.apples : 
+      self.color_case(apple, self.SPACE_COLOR)
     # Coloration des serpents
     for i, snake in enumerate(snakes):
       if not snake.alive :
@@ -150,22 +160,18 @@ class Grid():
     return self.render.copy()
   
 
-  def get_target_render(self, back_color = None, target_color=None):
+  def get_target_render(self):
     """Permet l'affichage de l'image correspondant à l'objectif
 
     Returns:
         [type]: [description]
     """    
-    if back_color is None :
-      back_color = self.BACK_COLOR
-    if target_color is None :
-      target_color = self.TARGET_COLOR
     height = self.size[1]*self.unit_size
     width = self.size[0]*self.unit_size
-    self.render=np.zeros((height+self.unit_gap,width+self.unit_gap,3))
-    self.render[:,:,:]=back_color
+    self.render=np.zeros((height+self.unit_gap,width+self.unit_gap,1))
+    self.render[:,:,:]=self.BACK_COLOR
     for apple in self.apples : 
-      self.color_case(apple, target_color)
+      self.color_case(apple, self.TARGET_COLOR)
     return self.render.copy()
 
   
