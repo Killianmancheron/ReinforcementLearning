@@ -1,8 +1,8 @@
 import numpy as np
-import random
 from .move import Move
 from .snake import Snake
 from .grid import Grid
+from random import randint
 
 class Abstract_Controller():
 
@@ -89,6 +89,9 @@ class Controller(Abstract_Controller):
     """    
     Abstract_Controller.__init__(self, grid_size, nb_snakes, nb_apples=1,seed=None)
     self.goals =False
+    self.set_hashtable()
+    self.h = 0
+    self.timer=0
 
   def get_reward(self, snake, direction):
     """Permet de récupérer une récompense pour un serpent et une action.
@@ -117,6 +120,7 @@ class Controller(Abstract_Controller):
       if np.array_equal(next_coord,apple):
         # On retire la pomme de la liste
         self.grid.drop_apple(apple)
+        self.timer=0
         return 1
     # Suppression de la queue
     snake.body.popleft()
@@ -146,21 +150,33 @@ class Controller(Abstract_Controller):
       rewards.append(reward)
       # Execution des actions pour chaque serpent
       if snake.alive :
+        next_coord=Move(snake.head, direction).next_coord()
+        self.h = self.h ^ self.hashTable [self.grid.HEAD_CODE[0]] [next_coord[0]] [next_coord[1]]
+        self.h = self.h ^ self.hashTable [self.grid.BODY_CODE[0]] [snake.head[0]] [snake.head[1]]
+        tail = snake.body[0]
+        self.h = self.h ^ self.hashTable [self.grid.SPACE_CODE] [tail[0]] [tail[1]]
         snake.action(direction)
+
     # Gestion de la collision sur tous les serpents
-    self.control_collision(rewards)
+    if self.nb_snakes>1:
+      self.control_collision(rewards)
     self.grid.update_board(self.snakes)
     # On souhaite autant de pommes que de serpents vivants
-    while len(self.grid.apples)<self.nb_apples:
-      self.grid.spawn_apple()
-
+    while (len(self.grid.apples)<self.nb_apples):
+      new_apple = self.grid.spawn_apple()
+      self.h = self.h ^ self.hashTable [self.grid.APPLE_CODE] [new_apple[0]] [new_apple[1]]
+    
+    self.h = self.h ^ self.hashTurn
     if self.nb_snakes!=1:
       rewards = self.harmonic(rewards)
 
     if self.is_done():
       dones = [True for snake in self.snakes]
+    elif (self.timer)>200:
+      return self.get_board(), [-1], [True]
     else :
       dones = self.dones_snakes()
+    self.timer+=1
     return self.get_board(), rewards, dones
 
   def control_collision(self, rewards):
@@ -180,9 +196,9 @@ class Controller(Abstract_Controller):
         # Vérification si la tête du serpent se trouve dans le corps des autres serpents
         if any((snake.head == x).all() for x in other_snake.body):
           if self.nb_snakes>1:
-            rewards[i]-=10
+            rewards[i]=-10
           else :
-            rewards[i]-=1
+            rewards[i]=-1
           snake.alive=False
     return rewards
 
@@ -259,3 +275,30 @@ class Controller(Abstract_Controller):
         np.array : Image de la représentation de la grille 
     """    
     return self.grid.get_target_render()
+
+  def legalMoves(self):
+    return [Move(self.snakes[0].head, direction) for direction in range(4)]
+  
+  def playout(self):
+    score = 0
+    while True:
+      actions = self.legalMoves()
+      if self.is_done:
+        return score
+      action = randint (0, len (actions) - 1)
+      score += self.execute(action)[1]
+
+  def set_hashtable(self):
+    hashTable = []
+    # blanc vide et noir
+    for k in range (-1,2+2*self.nb_snakes-1):
+      l = []
+      for i in range (self.grid_size[0]):
+        l1 = []
+        for j in range (self.grid_size[1]):
+          l1.append (randint (0, 2 ** 64))
+        l.append (l1)
+      hashTable.append (l)
+    hashTurn = randint (0, 2 ** 64)
+    self.hashTable=hashTable
+    self.hashTurn=hashTurn

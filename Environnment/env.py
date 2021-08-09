@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+
 from Environnment import Controller
 
 class SnakeGame():
@@ -11,12 +12,19 @@ class SnakeGame():
     self.goals = goals
     self.seed=seed
     self.viewer=None
+    self.total_score=0
+    
 
   def step(self, actions):
     if self.nb_snakes==1: # Action pour un seul serpent 
       actions = [actions]
     self.board, rewards, dones=self.controller.execute(actions)
     self.target = self.controller.get_target()
+
+    self.h =self.controller.h
+
+    self.done = self.controller.is_done()
+    self.total_score += rewards[0]
 
     if self.nb_snakes==1:
       if self.goals :
@@ -33,6 +41,11 @@ class SnakeGame():
     self.controller=Controller(self.grid_size, nb_snakes=self.nb_snakes, nb_apples=self.nb_apples, goals=self.goals)
     self.board=self.controller.get_board()
     self.target = self.controller.get_target()
+
+    self.total_score = 0
+    self.h =self.controller.h
+    self.done = self.controller.is_done()
+
     if self.goals :
       return self.board, self.target
     else : 
@@ -49,3 +62,17 @@ class SnakeGame():
       self.viewer.imshow(self.board)
       plt.pause(frame_speed)
     self.fig.canvas.draw_idle()
+
+  #============================================#
+
+  def legalMoves(self):
+    return self.controller.legalMoves()
+
+  def isdone(self):
+    return self.done
+
+  def score(self):
+    return self.total_score
+
+  def playout(self):   
+    return self.controller.playout()

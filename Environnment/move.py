@@ -36,3 +36,6 @@ class Move():
             return np.asarray([coord[0]+1,coord[1]]).astype(int)
         else :
             raise ValueError("Direction doesn't define, possible values : {0,1,2,3}")
+
+    def code(self):
+        return 4*(5*self.coord[0]+self.coord[1])+self.direction

@@ -1,5 +1,6 @@
+import matplotlib
 import numpy as np
-import random
+from random import randint
 
 class Grid():
 
@@ -18,6 +19,11 @@ class Grid():
   SPACE_COLOR = np.array([0.992, 0.961, 0.902], dtype=np.float16)
   TARGET_COLOR = np.array([1], dtype=np.float16)
   BACK_COLOR = np.array([0], dtype=np.float16)
+
+  BODY_CODE = [1]
+  HEAD_CODE = [2]
+  APPLE_CODE = -1
+  SPACE_CODE = 0
 
   def __init__(self, size = (15,15), unit_size=10, unit_gap=1, seed=None):
     """Classe correspondant à une référence de l'état du jeu. 
@@ -55,7 +61,7 @@ class Grid():
     self.reset_board()
     # Ajout des pommes
     for apple in self.apples:
-      self.board[apple[0]][apple[1]]=-1
+      self.board[apple[0]][apple[1]]=self.APPLE_CODE
     if len(snakes)==1:
       # Ajout des serpents
       for snake in snakes:
@@ -63,10 +69,10 @@ class Grid():
           continue
         # Ajout du corps
         for coord in snake.body :
-          self.board[coord[0]][coord[1]]=1
+          self.board[coord[0]][coord[1]]=self.BODY_CODE[0]
           # Ajout de la tête
         head=snake.head
-        self.board[head[0]][head[1]]=2
+        self.board[head[0]][head[1]]=self.HEAD_CODE[0]
     else :
       for snake in snakes:
         if not snake.alive:
@@ -84,11 +90,16 @@ class Grid():
     """Fais apparaître un pomme sur la grille. Ne peut apparaître que sur un emplacement vide.
     """    
     possible=np.where(self.board==0)
-    index=np.random.randint(0,len(possible[0]))
-    new_apple = np.asarray((possible[0][index],possible[1][index])).astype(int)
-    self.apples.append(new_apple)
-    # Ajout de la nouvelle pomme sur la grille
-    self.board[new_apple[0]][new_apple[1]]=-1
+    if len(possible[0])!=0:
+      index=np.random.randint(0,len(possible[0]))
+      new_apple = np.asarray((possible[0][index],possible[1][index])).astype(int)
+      self.apples.append(new_apple)
+      # Ajout de la nouvelle pomme sur la grille
+      self.board[new_apple[0]][new_apple[1]]=self.APPLE_CODE
+      return new_apple
+    else : 
+      new_apple = np.array([0,0])
+      self.apples.append(new_apple)
   
   def drop_apple(self, coordonate):
     """Retire un pomme de la liste des pommes
@@ -108,6 +119,25 @@ class Grid():
     x, y = coordonate[0], coordonate[1]
     self.render[x*self.unit_size+1:(x+1)*self.unit_size,
                 y*self.unit_size+1:(y+1)*self.unit_size]=color
+
+  def link_body(self, body, color, lw=2):
+    for i in range(len(body)-1):
+      x1, y1 = body[i]
+      x2, y2 = body[i+1]
+      if y1==y2:
+    
+        self.render[x1*self.unit_size+min((x1-x2),0):x1*self.unit_size+max((x1-x2),0),
+                  y1*self.unit_size+1:y1*self.unit_size+3]=self.APPLE_COLOR
+        self.render[x1*self.unit_size+min((x1-x2),0):x1*self.unit_size+max((x1-x2),0),
+                  (y1+1)*self.unit_size-2:(y1+1)*self.unit_size]=self.APPLE_COLOR
+      elif x1==x2:
+     
+        self.render[x1*self.unit_size+1:x1*self.unit_size+3,
+                  y1*self.unit_size:y1*self.unit_size+1]=self.APPLE_COLOR
+        self.render[(x1+1)*self.unit_size-2:(x1+1)*self.unit_size,
+                  y1*self.unit_size:y1*self.unit_size+1]=self.APPLE_COLOR
+      else : 
+        print('error')
 
   def get_render(self,snakes):
     """Permet l'affichage de la grille en image.
@@ -129,8 +159,10 @@ class Grid():
     for i, snake in enumerate(snakes):
       if not snake.alive :
         continue
+      
       for coord in snake.body:
         self.color_case(coord, self.BODY_COLOR[i])
+      #self.link_body(snake.body, self.BODY_COLOR[i])
       self.color_case(snake.head, self.HEAD_COLOR[i])
     return self.render.copy()
   
@@ -174,4 +206,5 @@ class Grid():
       self.color_case(apple, self.TARGET_COLOR)
     return self.render.copy()
 
-  
+  def isfull(self):
+    return not (-1 in self.board)|(0 in self.board)
