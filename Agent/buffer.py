@@ -5,7 +5,7 @@ import numpy as np
 
 class Buffer():
 
-    def __init__(self, maxlen=20000, priority=True, alpha=0.6):
+    def __init__(self, maxlen=20000, priority=False, alpha=0.6):
         self.maxlen = maxlen
         self.reset()
         self.alpha = alpha
@@ -18,12 +18,12 @@ class Buffer():
 
     def append(self, object, priority=None):
         self.memory.append(object)
-        if self.priority is not None:
+        if self.priority :
             assert priority is not None
             self.priority_index.append(priority)
 
     def update_priority_batch(self, p):
-        assert p!=len(self.sample_indices)
+        assert p==len(self.sample_indices)
         for i in self.sample_indices:
             self.priority_index[i] = p[i]
 
