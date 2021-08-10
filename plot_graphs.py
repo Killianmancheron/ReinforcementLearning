@@ -6,7 +6,7 @@ means = []
 mins=[]
 maxs=[]
 all_rewards=[]
-for playout in [1,10,100]:#,1000,10000]:
+for playout in [1,10,100,1000]:#,1000,10000]:
 
     r = open_rewards(folder=r'.\Records\rewards\UCT', filename=r'\rewards (10, 10) {}'.format(playout))
     means.append(sum(r['rewards'])/len(r['rewards']))
@@ -24,8 +24,8 @@ plt.boxplot(all_rewards)
 #              fmt='o')
 #plt.xscale('log')
 #plt.legend()
-plt.xticks([1,2,3,4,5],[1,10,100,1000,10000])
+plt.xticks([1,2,3,4],[1,10,100,1000])
 plt.xlabel('Nombre de parties aléatoires par coup')
 plt.ylabel('Score de fin de partie')
-plt.title('Comparaison UCT en fonction de N sur une grille 5x5')
+plt.title('Comparaison UCT en fonction de N sur une grille 10x10')
 plt.show()

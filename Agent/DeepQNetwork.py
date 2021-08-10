@@ -61,6 +61,18 @@ class DeepQN(AbstractDeepQN):
     state = np.array(state).reshape((-1,state.shape[0],state.shape[1],state.shape[2]))
     return np.array(self.model([state])[0])
 
+  def get_priority(self, sample):
+    state, action, reward, observation, done = sample
+    state=np.array(state).reshape((-1,)+state.shape)
+    observation=np.array(observation).reshape((-1,)+observation.shape)
+    target = np.array(self.model(state))
+    observation_target = np.array(self.target_model(observation))
+    if done :
+      delta = reward - target[action]
+    else :
+      delta = reward + max(observation_target) * self.gamma - target[action]
+    return abs(delta)
+
   def update(self, batch): # reward, done, observation
     if not self.compiled :
       raise ValueError("Compiler l'algorithme avant la mise à jour des poids")

@@ -164,7 +164,7 @@ class Controller(Abstract_Controller):
     # On souhaite autant de pommes que de serpents vivants
     while (len(self.grid.apples)<self.nb_apples):
       new_apple = self.grid.spawn_apple()
-      if new_apple:
+      if new_apple is None:
         self.h = self.h ^ self.hashTable [self.grid.APPLE_CODE] [new_apple[0]] [new_apple[1]]
     
     self.h = self.h ^ self.hashTurn
