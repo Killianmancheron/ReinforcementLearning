@@ -25,15 +25,24 @@ while not all(dones):
     print(dones)
     print(rewards)
 
-    # a faire:
-    # coder transfert learning DQN
-    # (faire liaison serpent et incorporer bordure)
-    
+    # a faire: 
+    # finir entrainement expert : recharger reward
+    # faire courbe tl et identification des différents facteurs. 1/3
+    # regarder coupage de tête ~
     # régler problème GRAVE
     
+
+    # => faire HER 5*5 en fonction de recompenses, sans reward et avec goal
+    # regarder influence de la politique
+    # Comparer perf en fonction du nombre d'objectif sample au bout d'un certain nombre d'itérations
+
     #     # en parallèle :
     # tester MARL DQN => reduire taille MARL 7x7
-    #=> faire HER 5*5, normalement HER doit réussir mieux
+    # coder UCT MARL
+    
     # faire HER 15*15 normalement HER doit réussir mieux
     # IMPORTANT : RESOUDRE CE PROBLEME CAR SINON HORRIBLE
+
+    # de loin : 
+    # tester tl sur HER puis retour normal
     

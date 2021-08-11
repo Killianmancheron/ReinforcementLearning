@@ -83,8 +83,8 @@ class DeepQN(AbstractDeepQN):
     for state, action, reward, observation, done in batch:
       states.append(list(state))
       observations.append(list(observation))
-    states = np.array(states).reshape(num_batch,observation.shape[0],observation.shape[1],observation.shape[2])
-    observations = np.array(observations).reshape(num_batch,observation.shape[0],observation.shape[1],observation.shape[2])
+    states = np.array(states).reshape((num_batch,)+observation.shape)
+    observations = np.array(observations).reshape((num_batch,)+observation.shape)
 
     targets = np.array(self.model(states))
     observation_targets = np.array(self.target_model(observations))
