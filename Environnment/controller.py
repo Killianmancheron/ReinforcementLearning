@@ -6,7 +6,7 @@ from random import randint
 
 class Abstract_Controller():
 
-  def __init__(self, grid_size=(15,15), nb_snakes=1, nb_apples=1,seed=None):
+  def __init__(self, grid_size=(15,15), nb_snakes=1, nb_apples=1,gridmode=False):
     """Classe abstraite du controleur pour l'encapsulation de la grille
 
     Args:
@@ -16,7 +16,7 @@ class Abstract_Controller():
     self.grid_size = grid_size
     self.grid=Grid(grid_size, seed=seed)
     # Coordonnées maximales de la grille
-
+    self.gridmode=gridmode
     self.nb_apples = nb_apples
     self.nb_snakes = nb_snakes
     # Positionne les serpents sur la grille
@@ -178,6 +178,7 @@ class Controller(Abstract_Controller):
     else :
       dones = self.dones_snakes()
     self.timer+=1
+
     return self.get_board(), rewards, dones
 
   def control_collision(self, rewards):
@@ -264,6 +265,8 @@ class Controller(Abstract_Controller):
     Returns:
         np.array : Image de la représentation de la grille
     """    
+    if self.gridmode:
+      return self.grid.board
     if self.goals:
       return self.grid.get_render_without_apple(self.select_alive_snakes())
     else:
