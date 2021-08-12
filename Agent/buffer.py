@@ -22,10 +22,10 @@ class Buffer():
             assert priority is not None
             self.priority_index.append(priority)
 
-    def update_priority_batch(self, p):
-        assert p==len(self.sample_indices)
-        for i in self.sample_indices:
-            self.priority_index[i] = p[i]
+    def update_priority_batch(self, priorities):
+        assert len(priorities)==len(self.sample_indices), 'format de densité : {} pour {} exemples'.format(len(p),len(self.sample_indices))
+        for i,priority in zip(self.sample_indices,priorities):
+            self.priority_index[i] = priority
 
     def get_priority_batch(self):
         result = []

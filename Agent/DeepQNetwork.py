@@ -27,8 +27,6 @@ class DeepQN(AbstractDeepQN):
   def __init__(self, model, *args, **kwargs):
     #on hérite des paramètres de la classe abstraite
     super(DeepQN, self).__init__(*args, **kwargs)
-
-
     self.model = model
     #etat :
     self.compiled = False
@@ -65,15 +63,16 @@ class DeepQN(AbstractDeepQN):
     state, action, reward, observation, done = sample
     state=np.array(state).reshape((-1,)+state.shape)
     observation=np.array(observation).reshape((-1,)+observation.shape)
-    target = np.array(self.model(state))
-    observation_target = np.array(self.target_model(observation))
+    target = np.array(self.model(state))[0]
+    observation_target = np.array(self.target_model(observation))[0]
     if done :
       delta = reward - target[action]
     else :
       delta = reward + max(observation_target) * self.gamma - target[action]
+   
     return abs(delta)
 
-  def update(self, batch): # reward, done, observation
+  def update(self, batch,sample_weight=None): # reward, done, observation
     if not self.compiled :
       raise ValueError("Compiler l'algorithme avant la mise à jour des poids")
 
@@ -97,4 +96,4 @@ class DeepQN(AbstractDeepQN):
       else :
         target[action] = reward + max(observation_targets[i]) * self.gamma
 
-    self.model.fit(states, targets, epochs=1, verbose=0)
+    self.model.fit(states, targets, epochs=1, verbose=0, sample_weight=sample_weight)
