@@ -24,8 +24,7 @@ class AMAF():
             moves = []
             moves = environnment.legalMoves ()
             if len (moves) == 0 or environnment.isdone ():
-                print(score)
-                return score
+                return environnment.score()
             n = random.randint (0, len (moves) - 1)
             played.append (moves [n].code ())
             score += environnment.step (moves [n].direction)[1]
@@ -52,6 +51,7 @@ class AMAF():
             played (list<int>): Liste de noeuds joués
             res (float): Résultats d'une partie.
         """    
+        
         for i in range (len (played)):
             code = played [i]
             seen = False
@@ -105,7 +105,6 @@ class GRAVE():
                         Q_c = t [2] [i] / t [1] [i]
                     AMAF_c = tr [4] [code] / tr [3] [code]
                     val = (1.0 - beta) * Q_c + beta * AMAF_c
- 
                 if val > bestValue:
                     bestValue = val
                     best = i
@@ -132,6 +131,7 @@ class GRAVE():
         Returns:
             Move: Meilleur mouvement selon l'algorithme.
         """
+        environnment.total_score=0
         self.AMAF = AMAF()    
         self.AMAF.addAMAF (environnment)
         for i in range (n):

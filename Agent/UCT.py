@@ -61,7 +61,6 @@ class UCT():
             b1 = copy.deepcopy (environnment)
             res = self.Update_Tree (b1)
         t = self.look(environnment)
-        
         moves = environnment.legalMoves ()
         best = moves [0]
         bestValue = t [1] [0]

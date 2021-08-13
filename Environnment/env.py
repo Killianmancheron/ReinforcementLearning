@@ -73,7 +73,7 @@ class SnakeGame():
     return self.done
 
   def score(self):
-    return self.total_score
+    return min(self.total_score*2+1,1)
 
   def playout(self):   
     return self.controller.playout()
