@@ -9,6 +9,7 @@ class SnakeGame():
     self.grid_size = grid_size
     self.nb_snakes = nb_snakes
     self.nb_apples = nb_apples
+    self.goals=goals
     self.gridmode=gridmode
     self.viewer=None
     self.total_score=0

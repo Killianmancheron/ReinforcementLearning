@@ -6,7 +6,7 @@ from random import randint
 
 class Abstract_Controller():
 
-  def __init__(self, grid_size=(15,15), nb_snakes=1, nb_apples=1,gridmode=False):
+  def __init__(self, grid_size=(15,15), nb_snakes=1, nb_apples=1):
     """Classe abstraite du controleur pour l'encapsulation de la grille
 
     Args:
@@ -14,9 +14,9 @@ class Abstract_Controller():
         nb_snakes (int, optional): Nombre de serpents. Defaults to 1.
     """    
     self.grid_size = grid_size
-    self.grid=Grid(grid_size, seed=seed)
+    self.grid=Grid(grid_size)
     # Coordonnées maximales de la grille
-    self.gridmode=gridmode
+    
     self.nb_apples = nb_apples
     self.nb_snakes = nb_snakes
     # Positionne les serpents sur la grille
@@ -80,18 +80,19 @@ class Abstract_Controller():
   
 class Controller(Abstract_Controller):
 
-  def __init__(self, grid_size=(15,15), nb_snakes=1, nb_apples=1, goals=False):
+  def __init__(self, grid_size=(15,15), nb_snakes=1, nb_apples=1, goals=False,gridmode=False):
     """Classe permettant le controle de la grille avec le serpent, de vérifier si des déplacements sont possibles, etc.
 
     Args:
         grid_size (tuple, optional): Taille de la grille. Defaults to (15,15).
         nb_snakes (int, optional): Nombre de serpents. Defaults to 1.
     """    
-    Abstract_Controller.__init__(self, grid_size, nb_snakes, nb_apples=1,seed=None)
+    Abstract_Controller.__init__(self, grid_size, nb_snakes, nb_apples=1)
     self.goals =False
     self.set_hashtable()
     self.h = 0
     self.timer=0
+    self.gridmode=gridmode
 
   def get_reward(self, snake, direction):
     """Permet de récupérer une récompense pour un serpent et une action.

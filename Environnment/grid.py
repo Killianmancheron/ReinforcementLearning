@@ -25,7 +25,7 @@ class Grid():
   APPLE_CODE = -1
   SPACE_CODE = 0
 
-  def __init__(self, size = (15,15), unit_size=10, unit_gap=1, seed=None):
+  def __init__(self, size = (15,15), unit_size=10, unit_gap=1):
     """Classe correspondant à une référence de l'état du jeu. 
     Gère l'appaparition d'une pomme et le rendu de la grille en image.
 
