@@ -29,7 +29,7 @@ def get_rewards(size, nb_episodes, n_playout, Agent):
         save_rewards(records, folder=folder, filename=r'\rewards {} {}'.format(size,n_playout))
     return total_rewards
 
-size = (5,5)
+size = (15,15)
 agent = UCT()
 folder = r'.\Records\rewards\UCT'
 

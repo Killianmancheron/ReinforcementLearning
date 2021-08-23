@@ -6,9 +6,9 @@ means = []
 mins=[]
 maxs=[]
 all_rewards=[]
-for playout in [1,10,100,1000]:#,1000,10000]:
+for playout in [10000]:#,1000,10000]:
 
-    r = open_rewards(folder=r'.\Records\rewards\UCT', filename=r'\rewards (10, 10) {}'.format(playout))
+    r = open_rewards(folder=r'.\Records\rewards\UCT', filename=r'\rewards (15, 15) {}'.format(playout))
     means.append(sum(r['rewards'])/len(r['rewards']))
     mins.append(sum(r['rewards'])/len(r['rewards'])-min(r['rewards']))
     maxs.append(max(r['rewards'])-sum(r['rewards'])/len(r['rewards']))
